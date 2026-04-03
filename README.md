@@ -76,11 +76,6 @@ Bu proje, müşteri yönetimi (CRM) ile anlık canlı destek (Live Chat) sistemi
 
 ---
 
-## 📸 Ekran Görüntüleri
-
-| Müşteri Paneli | Mesajlaşma Ekranı | Admin Monitoring |
-| :--- | :--- | :--- |
-| ![Dashboard] | ![Chat] | ![Admin] |
 
 ---
 
