@@ -7,33 +7,53 @@ Bu proje, müşteri yönetimi (CRM) ile anlık canlı destek (Live Chat) sistemi
 ![Real-time](https://img.shields.io/badge/Real--time-Reverb-blue?style=for-the-badge&logo=laravel)
 
 ---
-
-## 🔥 Öne Çıkan Özellikler
-
-### 💬 WhatsApp Stili Mesajlaşma Deneyimi
-*   **Modern Chat Bubble:** Müşteri ve temsilci için sağ-sol hizalı, şık mesaj balonları.
-*   **Presence Channel:** Kimin online, kimin offline olduğunu anlık (Real-time) görme özelliği.
-*   **Typing Indicator (Yazıyor...):** Karşı taraf mesaj yazarken anlık "Yazıyor..." uyarısı.
-*   **Unread Count:** Gelen kutusunda (Inbox) okunmamış mesajları anlık sayan dinamik sayaçlar.
-
-### 👥 Akıllı Yönetim & Atama
-*   **Round-Robin Auto-Assignment:** Yeni müşteri kayıt olduğunda, en az iş yükü olan (en az müşterisi olan) temsilciye otomatik atama.
-*   **Department Monitoring:** Yönetici (Manager) girişiyle tüm departman trafiğini canlı takip etme.
-*   **Admin Live View:** Süper Adminlerin tüm sistem yazışmalarını tek ekrandan izleyebileceği Monitoring paneli.
-
-### 🔔 Bildirim Sistemi
-*   **Toastr Live Alerts:** Kullanıcı panelin neresinde olursa olsun, yeni bir mesaj geldiğinde sağ üst köşede canlı bildirim alır.
-*   **One-Click Messaging:** Müşteri listesi üzerinden tek tıkla yeni konuşma başlatma.
-
----
-
 ## 🛠️ Teknoloji Yığını
+| Katman | Teknoloji | Notlar |
+| :--- | :--- | :--- |
+| **Backend** | **Laravel 13** | En güncel Laravel sürümü kullanılmaktadır. |
+| **Frontend** | **Blade, Tailwind CSS 4, Alpine.js** | Modern ve hızlı bir arayüz yapısı. |
+| **Gerçek Zamanlı** | **Laravel Reverb & Echo** | WebSocket üzerinden canlı mesajlaşma. |
+| **Kimlik Doğrulama** | **Laravel Breeze** | Admin, Personel ve Müşteri için özelleştirilmiş giriş sistemleri. |
+| **Veritabanı** | **MySQL/SQLite** | İlişkisel veritabanı (Eloquent ORM ile). |
 
-*   **Backend:** Laravel 13 (PHP 8.4)
-*   **Real-time:** Laravel Reverb (WebSocket) & Echo
-*   **Frontend:** Blade Templates & Tailwind CSS (Slate/Indigo Custom Theme)
-*   **Database:** MySQL / SQLite
-*   **Auth:** Laravel Breeze (Geliştirilmiş Role-based guard yapısı)
+## 🏗️ Veritabanı ve Model Yapısı
+Proje, karmaşık ilişkileri yönetmek için şu modelleri kullanmaktadır:
+
+*   **User:** Yönetici (Admin), Yönetici (Manager) ve Personel (Employee) kullanıcılarını tutar.
+*   **Customer:** CRM'e kayıtlı müşterileri temsil eder. Kendi özel giriş sistemine sahiptir.
+*   **Role & Department:** Kullanıcıların yetki seviyelerini ve bağlı oldukları departmanları belirler.
+*   **Conversation & Message:** Mesajlaşma sisteminin temelini oluşturur. Bir konuşma bir müşteri ve bir personel arasındadır.
+
+## 🌟 Önemli Özellikler
+
+### 1. Rol Tabanlı Erişim Kontrolü (RBAC)
+*   **Admin:** Tüm sistemi izleyebilir, kullanıcıları yönetebilir ve her şeyi monitor edebilir.
+*   **Manager:** Kendi ekibini ve kullanıcılarını yönetebilir.
+*   **Employee (Personel):** Müşterilerle iletişim kurar ve talepleri yönetir.
+*   **Customer (Müşteri):** Kendi paneline giriş yaparak mesaj gönderebilir ve profilini güncelleyebilir.
+
+### 2. Gerçek Zamanlı Mesajlaşma Sistemi
+*   **WhatsApp Benzeri Arayüz:** Chat balonları, okundu bilgisi (read_at) ve zaman damgaları.
+*   **Canlı Bildirimler:** Mesaj geldiğinde sayfa yenilenmeden Toastr ile bildirim gösterilir.
+*   **Yazıyor/Çevrimiçi Durumu:** (Geliştirilmekte olan özellikler arasında).
+
+### 3. Panel Yönetimi
+*   **Müşteri Paneli:** `/customer/dashboard` üzerinden erişilen, sade ve işlevsel arayüz.
+*   **Yönetim Paneli:** Personel ve adminler için `/admin` ve `/manager` rotaları altında toplanmış detaylı istatistikler ve yönetim araçları.
+
+## 📂 Dosya Yapısı Analizi
+*   `app/Http/Controllers/`: İş mantığının (business logic) ayrıştırıldığı yer. Admin, Manager ve Customer için ayrı klasörlerde toplanmıştır.
+*   `routes/web.php`: Uygulamanın tüm giriş noktalarını ve middleware (koruma) katmanlarını tanımlar.
+*   `resources/views/`: Blade şablonları ile oluşturulmuş, kullanıcı arayüzü dosyaları.
+*   `database/migrations/`: Veritabanı şemasının tarihsel gelişimi ve tablo yapıları.
+
+## 🏁 Sonuç ve Öneriler
+Proje, sağlam bir temel üzerine (Laravel 13 + Reverb) inşa edilmiştir. Mevcut yapı hem ölçeklenebilir hem de oldukça moderndir. 
+
+> [!TIP]
+> **Gelecek Adımlar:** Sisteme dosya paylaşımı özelliği, müşteri notları ve gelişmiş raporlama (grafiklerle desteklenmiş) eklenebilir.
+
+
 
 ---
 
