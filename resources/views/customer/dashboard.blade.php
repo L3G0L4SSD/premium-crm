@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Customer Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -72,14 +73,14 @@
             <!-- Sağ Kolon: Hızlı İşlemler ve Bildirimler -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Canlı Destek Kartı -->
-                <div class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-8 text-white shadow-xl shadow-indigo-200 relative overflow-hidden">
+                <div id="support-card" class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-8 text-white shadow-xl shadow-indigo-200 relative overflow-hidden transition-all duration-300">
                     <div class="relative z-10">
                         <h3 class="text-2xl font-bold mb-2">Desteğe mi ihtiyacınız var?</h3>
                         <p class="text-indigo-100 mb-8 max-w-md">Çalışanlarımız size yardımcı olmak için hazır. Canlı mesajlaşma panelini kullanarak hemen iletişime geçin.</p>
-                        <a href="{{ route('customer.messages') }}" 
+                        <button id="start-chat-btn"
                            class="inline-flex items-center bg-white text-indigo-700 font-bold px-8 py-3 rounded-xl hover:bg-indigo-50 transition drop-shadow-md">
                             💬 Mesajlaşmaya Başla
-                        </a>
+                        </button>
                     </div>
                     <!-- Süsleme İkonu -->
                     <div class="absolute -right-10 -bottom-10 opacity-20 transform rotate-12">
@@ -89,12 +90,45 @@
                     </div>
                 </div>
 
+                <!-- Embedded Chat (Initially Hidden) -->
+                <div id="embedded-chat-container" class="hidden animate-fadeIn">
+                    @include('customer.partials.chat', ['conversation' => $conversation])
+                </div>
+
                 <!-- Bilgilendirme Kutusu -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
                     <h4 class="font-bold mb-4 flex items-center">
                         <span class="mr-2 text-indigo-600">📌</span> Son Aktiviteler
                     </h4>
-                    <p class="text-slate-500 text-sm italic py-4 border-t border-slate-50">Henüz yeni bir aktivite bulunmuyor.</p>
+                    
+                    <div class="space-y-4 pt-4 border-t border-slate-50">
+                        @forelse($activities as $activity)
+                            <div class="flex items-start space-x-4 group">
+                                <div class="flex-shrink-0 w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg shadow-sm border border-slate-100 group-hover:bg-indigo-50 transition-colors">
+                                    {{ $activity->icon }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start">
+                                        <h5 class="text-sm font-bold text-slate-800">{{ $activity->title }}</h5>
+                                        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap ml-2">
+                                            {{ $activity->timestamp->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1 truncate pr-4">
+                                        {{ $activity->description }}
+                                    </p>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-slate-500 text-sm italic py-2">Henüz yeni bir aktivite bulunmuyor.</p>
+                        @endforelse
+                    </div>
+
+                    @if(count($activities) > 0)
+                        <div class="mt-6 pt-4 border-t border-slate-50 text-center">
+                            <span class="text-[11px] text-slate-400 font-semibold tracking-widest uppercase">Son Aktivitelerinizi Görüntülüyorsunuz</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -109,24 +143,43 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Müşteri ID'sini al
             const customerId = {{ $customer->id }};
+            const startChatBtn = document.getElementById('start-chat-btn');
+            const supportCard = document.getElementById('support-card');
+            const chatContainer = document.getElementById('embedded-chat-container');
+
+            if (startChatBtn) {
+                startChatBtn.addEventListener('click', function() {
+                    supportCard.classList.add('hidden');
+                    chatContainer.classList.remove('hidden');
+                    // Scroll to chat
+                    chatContainer.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
             console.log('Customer notification listener started for ID:', customerId);
 
-            window.Echo.private('customer.' + customerId)
-                .listen('.message.sent', (e) => {
-                    console.log('Yeni mesaj bildirimi alındı:', e);
+            if (window.Echo) {
+                window.Echo.private('customer.' + customerId)
+                    .listen('.message.sent', (e) => {
+                        console.log('Yeni mesaj bildirimi alındı:', e);
 
-                    toastr.options = {
-                        closeButton: true,
-                        progressBar: true,
-                        positionClass: 'toast-top-right',
-                        timeOut: 5000,
-                        onclick: function() {
-                            window.location.href = "{{ route('customer.messages') }}";
+                        // Eğer chat şu an açık değilse toastr göster
+                        if (chatContainer.classList.contains('hidden')) {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                positionClass: 'toast-top-right',
+                                timeOut: 5000,
+                                onclick: function() {
+                                    supportCard.classList.add('hidden');
+                                    chatContainer.classList.remove('hidden');
+                                    chatContainer.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            };
+                            toastr.info(e.message, '📧 Yeni Destek Mesajı: ' + e.sender_name);
                         }
-                    };
-
-                    toastr.info(e.message, '📧 Yeni Destek Mesajı: ' + e.sender_name);
-                });
+                    });
+            }
         });
     </script>
 </body>

@@ -19,6 +19,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Messages
+    Route::get('/messages', [EmployeeMessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/start/{customer}', [EmployeeMessageController::class, 'start'])->name('messages.start');
+    Route::get('/messages/{conversation}', [EmployeeMessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{conversation}', [EmployeeMessageController::class, 'store'])->name('messages.store');
 });
 Route::middleware(['auth', 'manager'])->group(function () {
     Route::get('/manager', [ManagerController::class, 'index'])->name('manager.index');
@@ -53,10 +59,6 @@ Route::middleware('auth:customer')->prefix('customer')->name('customer.')->group
     Route::post('/messages', [CustomerDashboardController::class, 'storeMessage'])->name('messages.store');
 });
 
-Route::get('/messages', [EmployeeMessageController::class, 'index'])->name('messages.index');
-Route::get('/messages/start/{customer}', [EmployeeMessageController::class, 'start'])->name('messages.start');
-Route::get('/messages/{conversation}', [EmployeeMessageController::class, 'show'])->name('messages.show');
-Route::post('/messages/{conversation}', [EmployeeMessageController::class, 'store'])->name('messages.store');
 
 
 

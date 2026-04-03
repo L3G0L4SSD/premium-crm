@@ -6,7 +6,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -21,8 +20,7 @@
                     "positionClass": "toast-top-right",
                 };
                 toastr.success(@json(session('success')));
-            </script>
-        
+            </script>        
         @endif
     </head>
     <body class="font-sans antialiased">
@@ -37,13 +35,11 @@
                     </div>
                 </header>
             @endisset
-
             <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>
         </div>
-
         @if(session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
@@ -57,14 +53,14 @@
                 });
             </script>
         @endif
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                @if(auth()->check())
+                @if(auth()->check() && auth()->user() instanceof \App\Models\User)
                     const user = @json(auth()->user()->load('role'));
                     const userId = user.id;
                     const deptId = user.department_id;
                     const isManager = user.role && user.role.slug === 'manager';
+                    const isAdmin = user.role && user.role.slug === 'super-admin';
 
                     console.log('Global notification listener started for User:', userId);
                     
@@ -82,6 +78,12 @@
                                     handleNotification(e);
                                 }
                             });
+                    }
+            
+                    if (isAdmin) {
+                        console.log('Admin mode: Listening to admin.monitoring');
+                        window.Echo.private('admin.monitoring')
+                            .listen('.message.sent', (e) => handleNotification(e));
                     }
 
                     function handleNotification(e) {

@@ -93,19 +93,22 @@
             const channel = window.Echo.join('conversation.' + conversationId);
 
             channel.here((users) => {
-                if (users.find(u => u.type === 'customer')) {
+                console.log('Admin here users:', users); // Debug: users listesini logla
+                if (users.find(u => u.type === 'customer' || u.type === 'guest')) { // Genişletilmiş kontrol
                     statusDot.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span> Online';
                     statusDot.classList.replace('text-slate-400', 'text-emerald-600');
                 }
             })
             .joining((user) => {
-                if (user.type === 'customer') {
+                console.log('Admin joining user:', user); // Debug: joining user'ı logla
+                if (user.type === 'customer' || user.type === 'guest') { // Genişletilmiş kontrol
                     statusDot.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span> Online';
                     statusDot.classList.replace('text-slate-400', 'text-emerald-600');
                 }
             })
             .leaving((user) => {
-                if (user.type === 'customer') {
+                console.log('Admin leaving user:', user); // Debug: leaving user'ı logla
+                if (user.type === 'customer' || user.type === 'guest') { // Genişletilmiş kontrol
                     statusDot.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-slate-300 mr-2"></span> Offline';
                     statusDot.classList.replace('text-emerald-600', 'text-slate-400');
                 }

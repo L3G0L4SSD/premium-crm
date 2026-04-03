@@ -53,16 +53,28 @@
                                     <td class="border px-4 py-2">{{ $customer->assignedUser->name ?? 'Yok' }}</td>
                                     <td class="border px-4 py-2">{{ $customer->createdByUser->name ?? 'Yok' }}</td>
                                     <td class="border px-4 py-2">{{ $customer->status }}</td>
-                                    <td class="border px-4 py-3">
+                                    <td class="border px-4 py-3" style="min-width: 280px;">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('messages.start', $customer) }}" class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded hover:bg-blue-700 transition" title="Mesaj Gönder">
-                                                💬 Mesaj
+                                            <a href="{{ route('messages.start', $customer) }}" 
+                                               style="display: inline-flex; align-items: center; background-color: #2563eb; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 700; transition: all 0.2s;"
+                                               onmouseover="this.style.backgroundColor='#1d4ed8'" 
+                                               onmouseout="this.style.backgroundColor='#2563eb'"
+                                               title="Mesaj Gönder">
+                                                <span style="margin-right: 4px;">💬</span> Mesaj
                                             </a>
-                                            <a href="{{ route('customers.show', $customer) }}" class="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition">
-                                                Detay
+
+                                            <a href="{{ route('customers.show', $customer) }}" 
+                                               style="display: inline-flex; align-items: center; background-color: #10b981; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 700; transition: all 0.2s;"
+                                               onmouseover="this.style.backgroundColor='#059669'" 
+                                               onmouseout="this.style.backgroundColor='#10b981'">
+                                                <span style="margin-right: 4px;">👁️</span> Detay
                                             </a>
-                                            <a href="{{ route('customers.edit', $customer) }}" class="inline-flex items-center px-3 py-1 bg-gray-600 text-white text-xs font-bold rounded hover:bg-gray-700 transition">
-                                                Düzenle
+
+                                            <a href="{{ route('customers.edit', $customer) }}" 
+                                               style="display: inline-flex; align-items: center; background-color: #4b5563; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 700; transition: all 0.2s;"
+                                               onmouseover="this.style.backgroundColor='#374151'" 
+                                               onmouseout="this.style.backgroundColor='#4b5563'">
+                                                <span style="margin-right: 4px;">✏️</span> Düzenle
                                             </a>
                                         </div>
                                     </td>

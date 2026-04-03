@@ -13,7 +13,7 @@ class EmployeeMessageController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role && $user->role->slug === 'super-admin') {
+        if ($user?->role?->slug === 'super-admin') {
             $conversations = Conversation::with(['customer', 'user'])
                 ->withCount(['messages as unread_count' => function ($query) {
                     $query->where('sender_type', 'customer')->whereNull('read_at');
@@ -37,7 +37,7 @@ class EmployeeMessageController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->role || $user->role->slug !== 'super-admin') {
+        if ($user?->role?->slug !== 'super-admin') {
             if ($conversation->user_id !== $user->id) {
                 abort(403, 'Bu konuşmaya erişim yetkiniz yok.');
             }
@@ -58,7 +58,7 @@ class EmployeeMessageController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->role || $user->role->slug !== 'super-admin') {
+        if ($user?->role?->slug !== 'super-admin') {
             if ($conversation->user_id !== $user->id) {
                 abort(403, 'Bu konuşmaya erişim yetkiniz yok.');
             }

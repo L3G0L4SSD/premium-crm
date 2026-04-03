@@ -14,7 +14,67 @@ class CustomerDashboardController extends Controller
     public function index(): View
     {
         $customer = auth('customer')->user();
-        return view('customer.dashboard', compact('customer'));
+        
+        // Aktiviteleri topla
+        $activities = collect();
+
+        // 1. Hesap Oluşturma Aktivitesi
+        $activities->push((object)[
+            'type' => 'account_created',
+            'title' => 'Hesap Oluşturuldu',
+            'description' => 'CRM sistemine üyeliğiniz gerçekleştirildi.',
+            'timestamp' => $customer->created_at,
+            'icon' => '🎉'
+        ]);
+
+        // 2. Profil Güncelleme Aktivitesi
+        if ($customer->updated_at > $customer->created_at) {
+            $activities->push((object)[
+                'type' => 'profile_updated',
+                'title' => 'Profil Güncellendi',
+                'description' => 'Profil bilgileriniz düzenlendi.',
+                'timestamp' => $customer->updated_at,
+                'icon' => '👤'
+            ]);
+        }
+
+        // 3. Son Mesaj Aktiviteleri (Son 5 mesaj)
+        $conversation = Conversation::firstOrCreate(
+            ['customer_id' => $customer->id],
+            [
+                'user_id' => $customer->assigned_to,
+                'subject' => 'Müşteri Destek Sohbeti',
+            ]
+        );
+
+        // Eğer atanmış kullanıcı sonradan değiştiyse veya atandıysa güncelle
+        if (!$conversation->user_id && $customer->assigned_to) {
+            $conversation->user_id = $customer->assigned_to;
+            $conversation->save();
+        }
+
+        if ($conversation) {
+            $recentMessages = $conversation->messages()
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            foreach ($recentMessages as $message) {
+                $isFromCustomer = ($message->sender_type === 'customer');
+                $activities->push((object)[
+                    'type' => 'message',
+                    'title' => $isFromCustomer ? 'Mesaj Gönderildi' : 'Yeni Mesaj Alındı',
+                    'description' => \Illuminate\Support\Str::limit($message->message, 50),
+                    'timestamp' => $message->created_at,
+                    'icon' => $isFromCustomer ? '📤' : '📧'
+                ]);
+            }
+        }
+
+        // Aktiviteleri tarihe göre sırala
+        $activities = $activities->sortByDesc('timestamp')->values();
+
+        return view('customer.dashboard', compact('customer', 'activities', 'conversation'));
     }
 
     public function editProfile(): View
